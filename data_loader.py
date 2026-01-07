@@ -58,6 +58,32 @@ def extract_rationale_text(tokens, rationales):
     
     return " | ".join(sorted(list(set(rationale_texts))))
 
+def get_targets(annotators):
+    """
+    Extracts the target communities mentioned by annotators.
+    Returns a sorted, unique list of targets joined by ' | '.
+    """
+    all_targets = []
+    for ann in annotators:
+        # 'target' is a list of strings like ['Women', 'African']
+        targets = ann.get('target', [])
+        all_targets.extend(targets)
+    
+    if not all_targets:
+        return "None"
+        
+    # Count frequency to pick top targets or just all unique ones?
+    # Let's take all unique targets for now.
+    unique_targets = sorted(list(set(all_targets)))
+    
+    # Filter out empty strings or 'None'
+    clean_targets = [t for t in unique_targets if t and t.lower() != 'none']
+    
+    if not clean_targets:
+        return "None"
+        
+    return " | ".join(clean_targets)
+
 def process_data():
     os.makedirs(RAW_DIR, exist_ok=True)
     os.makedirs(PROCESSED_DIR, exist_ok=True)
@@ -85,6 +111,9 @@ def process_data():
         # Get majority label
         label = get_majority_label(annotators)
         
+        # Get targets
+        targets = get_targets(annotators)
+        
         # Get rationales
         # 'rationales' key exists only if there are rationales
         rationales = item_data.get('rationales', [])
@@ -94,6 +123,7 @@ def process_data():
             'id': item_id,
             'text': full_text,
             'label': label,
+            'target': targets,
             'rationale': rationale_text,
             'has_rationale': len(rationales) > 0
         })
