@@ -6,7 +6,8 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     TrainingArguments,
-    BitsAndBytesConfig
+    AutoTokenizer,
+    TrainingArguments
 )
 from peft import LoraConfig, get_peft_model, TaskType
 from trl import SFTTrainer, SFTConfig
@@ -62,18 +63,14 @@ def train():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.unk_token # Phi-3 specific fix
     
-    # Quantization Config (4-bit for memory efficiency)
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16
-    )
+    # Quantization Config (Removed for Mac M4 - standard float16 fits in 16GB)
+    # bnb_config = BitsAndBytesConfig(...)
     
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_ID,
-        quantization_config=bnb_config,
+        torch_dtype=torch.float16, # Half precision for memory savings
         trust_remote_code=True,
-        device_map="auto" # Will find MPS or CPU
+        device_map="auto" # Will find MPS
     )
     
     # LoRA Config (Parameter Efficient Fine Tuning)

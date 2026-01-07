@@ -10,8 +10,8 @@ requests
 transformers
 datasets
 accelerate
-bitsandbytes
 peft
+trl
 
 # MLOps / API
 fastapi
