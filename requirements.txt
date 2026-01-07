@@ -1,0 +1,24 @@
+# Core
+torch
+numpy
+pandas
+scikit-learn
+tqdm
+requests
+
+# HuggingFace / LLM
+transformers
+datasets
+accelerate
+bitsandbytes
+peft
+
+# MLOps / API
+fastapi
+uvicorn
+pydantic
+pytest
+
+# Plotting (for EDA)
+matplotlib
+seaborn
